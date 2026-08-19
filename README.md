@@ -108,15 +108,14 @@ Documentation/
 └── Project-Presentation.pptx
 
 README.md
-LINKEDIN_POST.md
 LICENSE
 .gitignore
 ```
 
 ## Team
 
-- **Dhruv Gaidhane** — Team Lead
 - **Vaibhav Mule** — Team Member
+- **Dhruv Gaidhane** — Team Member
 - **Tejas Bargal** — Team Member
 
 **Organization:** NextGen Education
