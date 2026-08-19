@@ -1,0 +1,741 @@
+Full device configurations
+
+R-CAMP1
+hostname R-CAMP1
+no ip domain-lookup
+ip domain-name campus.local
+enable secret <REDACTED>
+service password-encryption
+username netadmin privilege 15 secret <REDACTED>
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+track 1 interface GigabitEthernet0/1 line-protocol
+!
+interface GigabitEthernet0/0
+ description Uplink to campus WAN
+ ip address dhcp
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description Trunk to DSW1
+ no ip address
+ no shutdown
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.10.2 255.255.255.0
+ ip access-group ACL-VLAN10-IN in
+ standby 10 ip 10.10.10.1
+ standby 10 priority 110
+ standby 10 preempt
+ standby 10 track 1 decrement 20
+!
+interface GigabitEthernet0/1.20
+ encapsulation dot1Q 20
+ ip address 10.10.20.2 255.255.255.0
+ ip access-group ACL-VLAN20-IN in
+ standby 20 ip 10.10.20.1
+ standby 20 priority 110
+ standby 20 preempt
+ standby 20 track 1 decrement 20
+!
+interface GigabitEthernet0/1.30
+ encapsulation dot1Q 30
+ ip address 10.10.30.2 255.255.255.0
+ ip access-group ACL-VLAN30-IN in
+ standby 30 ip 10.10.30.1
+ standby 30 priority 110
+ standby 30 preempt
+ standby 30 track 1 decrement 20
+!
+interface GigabitEthernet0/1.40
+ encapsulation dot1Q 40
+ ip address 10.10.40.2 255.255.255.0
+ ip access-group ACL-VLAN40-IN in
+ standby 40 ip 10.10.40.1
+ standby 40 priority 110
+ standby 40 preempt
+ standby 40 track 1 decrement 20
+!
+interface GigabitEthernet0/1.50
+ encapsulation dot1Q 50
+ ip address 10.10.50.2 255.255.255.0
+ ip access-group ACL-VLAN50-IN in
+ standby 50 ip 10.10.50.1
+ standby 50 priority 110
+ standby 50 preempt
+ standby 50 track 1 decrement 20
+!
+interface GigabitEthernet0/1.60
+ encapsulation dot1Q 60
+ ip address 10.10.60.2 255.255.255.0
+ ip access-group ACL-VLAN60-IN in
+ standby 60 ip 10.10.60.1
+ standby 60 priority 110
+ standby 60 preempt
+ standby 60 track 1 decrement 20
+!
+interface GigabitEthernet0/1.99
+ encapsulation dot1Q 99
+ ip address 10.10.99.2 255.255.255.0
+ standby 99 ip 10.10.99.1
+ standby 99 priority 110
+ standby 99 preempt
+ standby 99 track 1 decrement 20
+!
+ip dhcp excluded-address 10.10.10.1 10.10.10.10
+ip dhcp excluded-address 10.10.20.1 10.10.20.10
+ip dhcp excluded-address 10.10.30.1 10.10.30.10
+ip dhcp excluded-address 10.10.40.1 10.10.40.10
+ip dhcp excluded-address 10.10.50.1 10.10.50.10
+!
+ip dhcp pool VLAN10-ADMIN
+ network 10.10.10.0 255.255.255.0
+ default-router 10.10.10.1
+ dns-server 8.8.8.8
+!
+ip dhcp pool VLAN20-HR
+ network 10.10.20.0 255.255.255.0
+ default-router 10.10.20.1
+ dns-server 8.8.8.8
+!
+ip dhcp pool VLAN30-FINANCE
+ network 10.10.30.0 255.255.255.0
+ default-router 10.10.30.1
+ dns-server 8.8.8.8
+!
+ip dhcp pool VLAN40-DEV
+ network 10.10.40.0 255.255.255.0
+ default-router 10.10.40.1
+ dns-server 8.8.8.8
+!
+ip dhcp pool VLAN50-TRAINING
+ network 10.10.50.0 255.255.255.0
+ default-router 10.10.50.1
+ dns-server 8.8.8.8
+!
+ip access-list extended ACL-VLAN10-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN20-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN30-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ deny ip any 10.10.40.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN40-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ deny ip any 10.10.30.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN50-IN
+ deny ip any 10.10.30.0 0.0.0.255
+ deny ip any 10.10.40.0 0.0.0.255
+ deny ip any 10.10.60.0 0.0.0.255
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN60-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list standard NOC-MGMT-ONLY
+ permit 10.10.99.0 0.0.0.255
+!
+ntp master 3
+logging host 10.10.99.20
+logging trap informational
+!
+line vty 0 4
+ transport input ssh
+ login local
+ access-class NOC-MGMT-ONLY in
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+!
+banner motd ^Authorized access only. All activity is logged.^
+end
+R-CAMP2
+hostname R-CAMP2
+no ip domain-lookup
+ip domain-name campus.local
+enable secret <REDACTED>
+service password-encryption
+username netadmin privilege 15 secret <REDACTED>
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+track 1 interface GigabitEthernet0/1 line-protocol
+!
+interface GigabitEthernet0/0
+ description Uplink to campus WAN
+ ip address dhcp
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description Trunk to DSW2
+ no ip address
+ no shutdown
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.10.3 255.255.255.0
+ ip access-group ACL-VLAN10-IN in
+ standby 10 ip 10.10.10.1
+ standby 10 priority 90
+ standby 10 preempt
+ standby 10 track 1 decrement 20
+!
+interface GigabitEthernet0/1.20
+ encapsulation dot1Q 20
+ ip address 10.10.20.3 255.255.255.0
+ ip access-group ACL-VLAN20-IN in
+ standby 20 ip 10.10.20.1
+ standby 20 priority 90
+ standby 20 preempt
+ standby 20 track 1 decrement 20
+!
+interface GigabitEthernet0/1.30
+ encapsulation dot1Q 30
+ ip address 10.10.30.3 255.255.255.0
+ ip access-group ACL-VLAN30-IN in
+ standby 30 ip 10.10.30.1
+ standby 30 priority 90
+ standby 30 preempt
+ standby 30 track 1 decrement 20
+!
+interface GigabitEthernet0/1.40
+ encapsulation dot1Q 40
+ ip address 10.10.40.3 255.255.255.0
+ ip access-group ACL-VLAN40-IN in
+ standby 40 ip 10.10.40.1
+ standby 40 priority 90
+ standby 40 preempt
+ standby 40 track 1 decrement 20
+!
+interface GigabitEthernet0/1.50
+ encapsulation dot1Q 50
+ ip address 10.10.50.3 255.255.255.0
+ ip access-group ACL-VLAN50-IN in
+ standby 50 ip 10.10.50.1
+ standby 50 priority 90
+ standby 50 preempt
+ standby 50 track 1 decrement 20
+!
+interface GigabitEthernet0/1.60
+ encapsulation dot1Q 60
+ ip address 10.10.60.3 255.255.255.0
+ ip access-group ACL-VLAN60-IN in
+ standby 60 ip 10.10.60.1
+ standby 60 priority 90
+ standby 60 preempt
+ standby 60 track 1 decrement 20
+!
+interface GigabitEthernet0/1.99
+ encapsulation dot1Q 99
+ ip address 10.10.99.3 255.255.255.0
+ standby 99 ip 10.10.99.1
+ standby 99 priority 90
+ standby 99 preempt
+ standby 99 track 1 decrement 20
+!
+ip access-list extended ACL-VLAN10-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN20-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN30-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ deny ip any 10.10.40.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN40-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ deny ip any 10.10.30.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN50-IN
+ deny ip any 10.10.30.0 0.0.0.255
+ deny ip any 10.10.40.0 0.0.0.255
+ deny ip any 10.10.60.0 0.0.0.255
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list extended ACL-VLAN60-IN
+ deny ip any 10.10.99.0 0.0.0.255
+ permit ip any any
+!
+ip access-list standard NOC-MGMT-ONLY
+ permit 10.10.99.0 0.0.0.255
+!
+ntp server 10.10.10.2
+logging host 10.10.99.20
+logging trap informational
+!
+line vty 0 4
+ transport input ssh
+ login local
+ access-class NOC-MGMT-ONLY in
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+end
+DSW1
+hostname DSW1
+enable secret <REDACTED>
+service password-encryption
+username netadmin privilege 15 secret <REDACTED>
+ip domain-name campus.local
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+vlan 10
+ name ADMIN
+vlan 20
+ name HR
+vlan 30
+ name FINANCE
+vlan 40
+ name DEVELOPMENT
+vlan 50
+ name TRAINING-LAB
+vlan 60
+ name SERVER-ROOM
+vlan 99
+ name NETWORK-MGMT
+vlan 999
+ name NATIVE-UNUSED
+!
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10,30,50,99 root primary
+spanning-tree vlan 20,40,60 root secondary
+!
+ip dhcp snooping vlan 10,20,30,40,50,60
+ip dhcp snooping database flash:dhcp-snoop-db
+ip arp inspection vlan 10,20,30,40,50,60
+!
+interface range GigabitEthernet0/2-3
+ description LACP to DSW2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+ channel-group 1 mode active
+ ip dhcp snooping trust
+ ip arp inspection trust
+!
+interface Port-channel1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+ udld port aggressive
+!
+interface GigabitEthernet0/1
+ description Trunk to R-CAMP1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+!
+interface range GigabitEthernet0/4-6
+ description Trunks to ASW-Floor1/2/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+ spanning-tree guard root
+ ip dhcp snooping trust
+ ip arp inspection trust
+!
+interface Vlan99
+ ip address 10.10.99.4 255.255.255.0
+ no shutdown
+!
+ip default-gateway 10.10.99.1
+ntp server 10.10.10.2
+logging host 10.10.99.20
+logging trap informational
+!
+ip access-list standard NOC-MGMT-ONLY
+ permit 10.10.99.0 0.0.0.255
+!
+line vty 0 4
+ transport input ssh
+ login local
+ access-class NOC-MGMT-ONLY in
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+end
+DSW2
+hostname DSW2
+enable secret <REDACTED>
+service password-encryption
+username netadmin privilege 15 secret <REDACTED>
+ip domain-name campus.local
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+vlan 10
+ name ADMIN
+vlan 20
+ name HR
+vlan 30
+ name FINANCE
+vlan 40
+ name DEVELOPMENT
+vlan 50
+ name TRAINING-LAB
+vlan 60
+ name SERVER-ROOM
+vlan 99
+ name NETWORK-MGMT
+vlan 999
+ name NATIVE-UNUSED
+!
+spanning-tree mode rapid-pvst
+spanning-tree vlan 20,40,60 root primary
+spanning-tree vlan 10,30,50,99 root secondary
+!
+ip dhcp snooping vlan 10,20,30,40,50,60
+ip dhcp snooping database flash:dhcp-snoop-db
+ip arp inspection vlan 10,20,30,40,50,60
+!
+interface range GigabitEthernet0/2-3
+ description LACP to DSW1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+ channel-group 1 mode active
+ ip dhcp snooping trust
+ ip arp inspection trust
+!
+interface Port-channel1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+ udld port aggressive
+!
+interface GigabitEthernet0/1
+ description Trunk to R-CAMP2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+!
+interface range GigabitEthernet0/4-6
+ description Trunks to ASW-Floor1/2/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,50,60,99
+ spanning-tree guard root
+ ip dhcp snooping trust
+ ip arp inspection trust
+!
+interface Vlan99
+ ip address 10.10.99.5 255.255.255.0
+ no shutdown
+!
+ip default-gateway 10.10.99.1
+ntp server 10.10.10.2
+logging host 10.10.99.20
+logging trap informational
+!
+ip access-list standard NOC-MGMT-ONLY
+ permit 10.10.99.0 0.0.0.255
+!
+line vty 0 4
+ transport input ssh
+ login local
+ access-class NOC-MGMT-ONLY in
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+end
+ASW-Floor1 (Admin + HR)
+hostname ASW-F1
+enable secret <REDACTED>
+service password-encryption
+username netadmin privilege 15 secret <REDACTED>
+ip domain-name campus.local
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+vlan 10
+ name ADMIN
+vlan 20
+ name HR
+vlan 99
+ name NETWORK-MGMT
+vlan 999
+ name NATIVE-UNUSED
+!
+spanning-tree mode rapid-pvst
+!
+interface range GigabitEthernet0/1-2
+ description Uplinks — Gi0/1 to DSW1, Gi0/2 to DSW2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,99
+!
+interface range FastEthernet0/1-10
+ description Admin PCs
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface range FastEthernet0/11-20
+ description HR PCs and shared printer
+ switchport mode access
+ switchport access vlan 20
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface Vlan99
+ ip address 10.10.99.6 255.255.255.0
+ no shutdown
+!
+ip default-gateway 10.10.99.1
+ntp server 10.10.10.2
+logging host 10.10.99.20
+!
+ip access-list standard NOC-MGMT-ONLY
+ permit 10.10.99.0 0.0.0.255
+!
+line vty 0 4
+ transport input ssh
+ login local
+ access-class NOC-MGMT-ONLY in
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+end
+ASW-Floor2 (Finance + Development + Server Room)
+hostname ASW-F2
+enable secret <REDACTED>
+service password-encryption
+username netadmin privilege 15 secret <REDACTED>
+ip domain-name campus.local
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+vlan 30
+ name FINANCE
+vlan 40
+ name DEVELOPMENT
+vlan 60
+ name SERVER-ROOM
+vlan 99
+ name NETWORK-MGMT
+vlan 999
+ name NATIVE-UNUSED
+!
+spanning-tree mode rapid-pvst
+!
+interface range GigabitEthernet0/1-2
+ description Uplinks — Gi0/1 to DSW1, Gi0/2 to DSW2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 30,40,60,99
+!
+interface range FastEthernet0/1-10
+ description Finance PCs
+ switchport mode access
+ switchport access vlan 30
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface range FastEthernet0/11-20
+ description Development PCs
+ switchport mode access
+ switchport access vlan 40
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface range FastEthernet0/21-23
+ description SRV-DHCP / SRV-FIN / SRV-DEV
+ switchport mode access
+ switchport access vlan 60
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface Vlan99
+ ip address 10.10.99.7 255.255.255.0
+ no shutdown
+!
+ip default-gateway 10.10.99.1
+ntp server 10.10.10.2
+logging host 10.10.99.20
+!
+ip access-list standard NOC-MGMT-ONLY
+ permit 10.10.99.0 0.0.0.255
+!
+line vty 0 4
+ transport input ssh
+ login local
+ access-class NOC-MGMT-ONLY in
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+end
+ASW-Floor3 (Training Lab + NOC)
+hostname ASW-F3
+enable secret <REDACTED>
+service password-encryption
+username netadmin privilege 15 secret <REDACTED>
+ip domain-name campus.local
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+vlan 50
+ name TRAINING-LAB
+vlan 99
+ name NETWORK-MGMT
+vlan 999
+ name NATIVE-UNUSED
+!
+spanning-tree mode rapid-pvst
+!
+interface range GigabitEthernet0/1-2
+ description Uplinks — Gi0/1 to DSW1, Gi0/2 to DSW2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 50,99
+!
+interface range FastEthernet0/1-10
+ description Training Lab PCs
+ switchport mode access
+ switchport access vlan 50
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface FastEthernet0/11
+ description NOC-PC — SSH admin only
+ switchport mode access
+ switchport access vlan 99
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface Vlan99
+ ip address 10.10.99.8 255.255.255.0
+ no shutdown
+!
+ip default-gateway 10.10.99.1
+ntp server 10.10.10.2
+logging host 10.10.99.20
+!
+ip access-list standard NOC-MGMT-ONLY
+ permit 10.10.99.0 0.0.0.255
+!
+line vty 0 4
+ transport input ssh
+ login local
+ access-class NOC-MGMT-ONLY in
+line con 0
+ logging synchronous
+ exec-timeout 5 0
+end
+ Phase-by-phase implementation process:
+Each phase maps directly to a section of the configs above. Complete and verify one phase fully before starting the next — this is what your before/after evidence and incident report should be structured around.
+Phase 1 — VLAN design and creation
+Create VLANs 10, 20, 30, 40, 50, 60, 99, and 999 on DSW1, DSW2, and all three ASWs (Section 11).
+Name every VLAN to match Section 4 so show vlan brief output is self-documenting.
+
+Verify:  show vlan brief 
+ ·            show interfaces status
+Phase 2 — Build access and distribution switching layer
+Cable each ASW with two uplinks — one to DSW1, one to DSW2.
+Cable DSW1 and DSW2 together with two links for the future EtherChannel.
+Bring up all access ports and confirm link lights / status before applying VLAN assignments.
+
+Verify:   show interfaces status  ·
+               show cdp neighbors
+Phase 3 — Configure trunks, allowed VLANs, and native VLAN
+Apply the trunk blocks from Section 11 on every inter-switch link.
+Set native VLAN 999 on every trunk — confirm it matches on both ends of each link to avoid a native VLAN mismatch.
+Restrict the allowed VLAN list on each ASW uplink to only the VLANs that floor actually uses.
+Verify:  show interfaces trunk  ·  
+             show interfaces <int> switchport
+Phase 4 — Configure EtherChannel between distribution switches
+Apply channel-group 1 mode active on both members on DSW1 and DSW2 (LACP active/active).
+Confirm the port-channel forms before moving on — a common fault here is one side set to passive.
+
+Verify: show etherchannel summary 
+ ·            show interfaces port-channel 1
+Phase 5 — Set STP root primary/secondary per VLAN group and PortFast
+Apply the split root configuration from Section 3.2 on DSW1 and DSW2.
+Enable PortFast and BPDU guard on every access-facing port on all three ASWs.
+Enable root guard on DSW1/DSW2 ports facing the access layer.
+
+Verify: show spanning-tree vlan <id>  
+          ·  show spanning-tree summary
+Phase 6 — Configure inter-VLAN routing with HSRP
+Apply router-on-a-stick sub-interfaces and HSRP groups from Section 11.1–11.2 on both routers.
+Add track 1 on the uplink interface on both routers so HSRP reacts to link failure, not just router failure.
+Configure DHCP pools for the five user VLANs.
+
+Verify: show standby brief  · 
+             show ip interface brief  · 
+              show ip dhcp binding
+Phase 7 — Apply port security, DHCP snooping, ARP inspection, and ACLs
+Apply port security on every access port (Section 11.5–11.7).
+Enable DHCP snooping and Dynamic ARP Inspection on DSW1, DSW2, and trust the uplink ports (Section 11.3–11.4).
+Apply the ACL-VLANxx-IN access lists on both routers (Section 10) and the NOC-MGMT-ONLY access-class on every device's VTY lines.
+
+Verify: show port-security  
+             ·  show ip dhcp snooping  
+·              show ip arp inspection  · 
+               show access-lists
+Phase 8 — Redundancy, access-control, and documentation testing
+Shut down each distribution switch in turn and confirm every access switch keeps connectivity through the other.
+Shut down R-CAMP1's uplink and confirm HSRP fails over to R-CAMP2 within a few seconds.
+Test every deny/allow pair in the Section 10 matrix with ping and document pass/fail.
+Capture before/after show-command output for every phase and write up any faults encountered in the incident report.
+Verify: show standby brief   ·
+              show spanning-tree vlan <id>
+  ·            ping / traceroute across VLAN pairs
