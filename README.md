@@ -8,6 +8,11 @@ This project simulates a multi-floor enterprise campus network with redundant ca
 
 Security and management features include SSH version 2, local authentication, a dedicated Management VLAN, ACL-based traffic filtering, DHCP snooping, Dynamic ARP Inspection, Port Security, PortFast and BPDU Guard.
 
+## Network Topology
+
+<img width="1101" height="735" alt="topo" src="https://github.com/user-attachments/assets/b3f31d88-5e68-4a71-9465-1e6f955cf347" />
+
+
 ## Architecture
 
 - **Campus routers:** R-CAMP1, R-CAMP2
